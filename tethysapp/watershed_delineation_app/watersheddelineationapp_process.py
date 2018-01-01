@@ -1,7 +1,7 @@
 import os
 import binascii
 from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format, FORMATS
-from tethys_apps.tethysapp.watershed_delineation_app.controllers import WD
+from tethys_apps.tethysapp.watershed_delineation_app.grassfunctions import WD
 
 class watersheddelineationprocess(Process):
     def __init__(self):

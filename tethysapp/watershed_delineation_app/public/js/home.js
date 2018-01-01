@@ -28,7 +28,7 @@ $(document).ready(function () {
 
     river_layer = new ol.layer.Vector({
         source: new ol.source.Vector({
-          url: "/static/watershed_delineation_app/kml/dr_stream_lines_1k.kml",
+          url: "/static/watershed_delineation_app/kml/utah_streams.kml",
           format: new ol.format.KML(),
          })
       });
@@ -74,10 +74,10 @@ $(document).ready(function () {
     map.addLayer(river_layer);
     map.addLayer(basin_layer);
 
-    var lat = 18.9108;
-    var lon = -71.2500;
-    CenterMap(lat, lon);
-    map.getView().setZoom(8);
+    var ylat = 40.3;
+    var xlon = -111.55;
+    CenterMap(xlon,ylat);
+    map.getView().setZoom(11);
 
     map.on('click', function(evt) {
         var coordinate = evt.coordinate;
@@ -86,16 +86,16 @@ $(document).ready(function () {
         outlet_x = coordinate[0];
         outlet_y = coordinate[1];
         map.getView().setCenter(evt.coordinate);
-        map.getView().setZoom(15);
+        map.getView().setZoom(16);
 
     })
 
 });
 
-function CenterMap(lat,lon){
+function CenterMap(xlon,ylat){
     var dbPoint = {
         "type": "Point",
-        "coordinates": [lon, lat]
+        "coordinates": [xlon, ylat]
     }
     var coords = ol.proj.transform(dbPoint.coordinates, 'EPSG:4326','EPSG:3857');
     map.getView().setCenter(coords);
@@ -144,7 +144,8 @@ function run_wd_service() {
         },
         success: function (data) {
 
-            basin_layer.getSource().addFeatures(geojson2feature(data));
+            basin_layer.getSource().addFeatures(geojson2feature(data.basin_data));
+            click_point_layer.getSource().addFeatures(geojson2feature(data.outlet_snapped_data));
             displayStatus.removeClass('calculating');
             displayStatus.addClass('success');
             displayStatus.html('<em>Success!</em>');
