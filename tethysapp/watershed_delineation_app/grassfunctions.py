@@ -5,12 +5,12 @@ import tempfile
 from tempfile import mkstemp
 
 # Apache should have ownership and full permission over this path
-DEM_FULL_PATH = "/home/sherry/DEM/utah3857.tif"
+DEM_FULL_PATH = "/home/sherry/utahfiles/utah3857.tif"
 DEM_NAME = 'utah3857' # DEM layer name, no extension (no .tif)
-DRAINAGE_FULL_PATH = "/home/sherry/DEM/utah3857_drain.tif"
+DRAINAGE_FULL_PATH = "/home/sherry/utahfiles/utah3857_drain.tif"
 DRAINAGE_NAME = 'utah3857_drain'
-STREAMS_FULL_PATH = "/home/sherry/DEM/utah3857_streams.tif"
-STREAMS_NAME = 'utah3857_streams'
+STREAMS_FULL_PATH = "/home/sherry/utahfiles/streams_1k_rast.tif"
+STREAMS_NAME = 'streams_1k_rast'
 GISBASE = "/usr/lib/grass72" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')

@@ -1,7 +1,7 @@
 /**
  * Created by sherry on 12/29/17.
  */
-var map, click_point_layer, river_layer, basin_layer;
+var map, click_point_layer, river_layer, basin_layer, snap_point_layer;
 var outlet_x, outlet_y;
 
 var displayStatus = $('#display-status');
@@ -28,7 +28,7 @@ $(document).ready(function () {
 
     river_layer = new ol.layer.Vector({
         source: new ol.source.Vector({
-          url: "/static/watershed_delineation_app/kml/utah_streams.kml",
+          url: "/static/watershed_delineation_app/kml/streams_1k_vect.kml",
           format: new ol.format.KML(),
          })
       });
@@ -47,6 +47,25 @@ $(document).ready(function () {
           radius: 7,
           fill: new ol.style.Fill({
             color: '#ffcc33'
+          })
+        })
+      })
+    });
+
+    snap_point_layer = new ol.layer.Vector({
+      source: new ol.source.Vector(),
+      style: new ol.style.Style({
+        fill: new ol.style.Fill({
+          color: 'rgba(255, 255, 255, 0.2)'
+        }),
+        stroke: new ol.style.Stroke({
+          color: '#00ff00',
+          width: 2
+        }),
+        image: new ol.style.Circle({
+          radius: 7,
+          fill: new ol.style.Fill({
+            color: '#00ff00'
           })
         })
       })
@@ -73,11 +92,12 @@ $(document).ready(function () {
     map.addLayer(click_point_layer);
     map.addLayer(river_layer);
     map.addLayer(basin_layer);
+    map.addLayer(snap_point_layer);
 
-    var ylat = 40.3;
+    var ylat = 40.1;
     var xlon = -111.55;
     CenterMap(xlon,ylat);
-    map.getView().setZoom(11);
+    map.getView().setZoom(10);
 
     map.on('click', function(evt) {
         var coordinate = evt.coordinate;
@@ -86,7 +106,7 @@ $(document).ready(function () {
         outlet_x = coordinate[0];
         outlet_y = coordinate[1];
         map.getView().setCenter(evt.coordinate);
-        map.getView().setZoom(16);
+        map.getView().setZoom(14);
 
     })
 
@@ -128,6 +148,7 @@ function geojson2feature(myGeoJSON) {
 function run_wd_service() {
 
     basin_layer.getSource().clear();
+    snap_point_layer.getSource().clear();
 
     displayStatus.removeClass('error');
     displayStatus.addClass('calculating');
@@ -145,7 +166,7 @@ function run_wd_service() {
         success: function (data) {
 
             basin_layer.getSource().addFeatures(geojson2feature(data.basin_data));
-            click_point_layer.getSource().addFeatures(geojson2feature(data.outlet_snapped_data));
+            snap_point_layer.getSource().addFeatures(geojson2feature(data.outlet_snapped_data));
             displayStatus.removeClass('calculating');
             displayStatus.addClass('success');
             displayStatus.html('<em>Success!</em>');
