@@ -29,7 +29,7 @@ def WD(jobid, xlon, ylat, prj):
     grass7bin = GRASS7BIN
 
     # Define grass data folder, location, mapset
-    gisdb = os.path.join(tempfile.gettempdir(), 'grassdata')
+    gisdb = GISDB
     if not os.path.exists(gisdb):
         os.mkdir(gisdb)
     location = "location_{0}".format(dem)
@@ -56,12 +56,11 @@ def WD(jobid, xlon, ylat, prj):
 
         xlon = float(xlon)
         ylat = float(ylat)
-        outlet = (xlon, ylat)
 
         # Set GISBASE environment variable
         os.environ['GISBASE'] = gisbase
         # the following not needed with trunk
-        os.environ['PATH'] += os.pathsep + os.path.join(gisbase, 'extrabin')
+        os.environ['PATH'] += os.pathsep + os.path.join(gisbase, 'bin')
         # Set GISDBASE environment variable
         os.environ['GISDBASE'] = gisdb
 
@@ -100,14 +99,11 @@ def WD(jobid, xlon, ylat, prj):
             coor_list = stats.split("|")
             xlon = float(coor_list[0])
             ylat = float(coor_list[1])
-            outlet = (xlon, ylat)
-
-        # Define region
-        stats = gscript.parse_command('g.region', raster=dem, flags='p')
-
 
         # Flow accumulation analysis
         if not os.path.exists(drainage_mapset_path):
+            # Define region
+            stats = gscript.parse_command('g.region', raster=dem, flags='p')
             stats = gscript.read_command('r.watershed', elevation=dem, threshold='10000', drainage=drainage,
                                          flags='s', overwrite=True)
 
