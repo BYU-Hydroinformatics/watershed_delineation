@@ -100,6 +100,30 @@ def WD(jobid, xlon, ylat, prj):
             xlon = float(coor_list[0])
             ylat = float(coor_list[1])
 
+        # Define region
+        stats = gscript.parse_command('g.region', raster=dem, flags='p')
+
+        # Read extent of the dem file
+        for key in stats:
+            if "north:" in key:
+                north = float(key.split(":")[1])
+            elif "south:" in key:
+                south = float(key.split(":")[1])
+            elif "west:" in key:
+                west = float(key.split(":")[1])
+            elif "east:" in key:
+                east = float(key.split(":")[1])
+            elif "nsres:" in key:
+                nsres = float(key.split(":")[1])
+            elif "ewres:" in key:
+                ewres = float(key.split(":")[1])
+
+        # check if xlon, ylat is within the extent of dem
+        if xlon < west or xlon > east:
+            raise Exception("(xlon, ylat) is out of dem region.")
+        elif ylat < south or ylat > north:
+            raise Exception("(xlon, ylat) is out of dem region.")
+
         # Flow accumulation analysis
         if not os.path.exists(drainage_mapset_path):
             # Define region

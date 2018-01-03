@@ -25,23 +25,18 @@ def home(request):
 
     return render(request, 'watershed_delineation_app/home.html', context)
 
+@login_required()
 def run_wd(request):
 
     string_length = 4
     jobid = binascii.hexlify(os.urandom(string_length))
     message = ""
-    input_para = {}
 
     try:
         if request.GET:
             xlon = request.GET.get("xlon", None)
             ylat = request.GET.get("ylat", None)
             prj = request.GET.get("prj", None)
-
-            input_para["xlon"] = xlon
-            input_para["ylat"] = ylat
-            input_para["prj"] = prj
-            print(xlon)
 
             # Run WD()
             #outletbasin_GEOJSON, msg = WD(jobid, xlon, ylat, prj)
