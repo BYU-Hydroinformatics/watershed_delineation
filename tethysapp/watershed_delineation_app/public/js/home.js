@@ -171,6 +171,7 @@ function run_wd_service() {
             displayStatus.addClass('success');
             displayStatus.html('<em>Success!</em>');
 
+
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Error");
