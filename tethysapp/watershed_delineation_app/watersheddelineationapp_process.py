@@ -1,6 +1,6 @@
 import os
 import binascii
-from pywps import Process, LiteralInput, ComplexInput, ComplexOutput, Format, FORMATS
+from pywps import Process, LiteralInput, LiteralOutput,ComplexInput, ComplexOutput, Format, FORMATS
 from tethys_apps.tethysapp.watershed_delineation_app.grassfunctions import WD
 
 class watersheddelineationprocess(Process):
@@ -9,7 +9,8 @@ class watersheddelineationprocess(Process):
         inputs = [LiteralInput('outlet_x', 'Outlet Longitude', data_type='float'),
                   LiteralInput('outlet_y', 'Outlet Latitude', data_type='float')]
         outputs = [ComplexOutput('watershed', 'Delineated Watershed', supported_formats=[Format('application/gml+xml')]),
-                   ComplexOutput('snappoint', 'Snapped outlet point', supported_formats=[Format('application/gml+xml')])]
+                   ComplexOutput('snappoint', 'Snapped outlet point', supported_formats=[Format('application/gml+xml')]),
+                   LiteralOutput('mytime', 'my time', data_type='float')]
 
         super(watersheddelineationprocess, self).__init__(
             self._handler,
@@ -27,7 +28,9 @@ class watersheddelineationprocess(Process):
 
     def _handler(self, request, response):
 
-
+        # self.async = "true";
+        #
+        # print(self.async);
         #get input values
         xlon = request.inputs['outlet_x'][0].data
         ylat = request.inputs['outlet_y'][0].data
@@ -48,6 +51,7 @@ class watersheddelineationprocess(Process):
         response.outputs['watershed'].file = basin_GEOJSON
         response.outputs['snappoint'].output_format = FORMATS.GML
         response.outputs['snappoint'].file = outlet_snapped_GEOJSON
+        response.outputs['mytime'].data = "234"
 
         print response.outputs['watershed'].file
 

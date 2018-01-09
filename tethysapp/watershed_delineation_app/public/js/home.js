@@ -1,7 +1,7 @@
 /**
  * Created by sherry on 12/29/17.
  */
-var map, click_point_layer, river_layer, basin_layer, snap_point_layer;
+var map, click_point_layer, river_layer, basin_layer, snap_point_layer,dem_layer;
 var outlet_x, outlet_y;
 
 var displayStatus = $('#display-status');
@@ -26,12 +26,22 @@ $(document).ready(function () {
 		})
 	});
 
-    river_layer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          url: "/static/watershed_delineation_app/kml/streams_1k_vect.kml",
-          format: new ol.format.KML(),
-         })
-      });
+    // river_layer = new ol.layer.Vector({
+    //     source: new ol.source.Vector({
+    //       url: "/static/watershed_delineation_app/kml/streams_1k_vect.kml",
+    //       format: new ol.format.KML(),
+    //      })
+    //   });
+
+    river_layer = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            //url: 'https://geoserver.byu.edu/arcgis/services/sherry/utah_streams1k/MapServer/WMSServer?',
+            url:'https://geoserver.byu.edu/arcgis/services/sherry/dr_streams/MapServer/WMSServer?',
+            params: {'LAYERS': '0'},
+            crossOrigin: 'anonymous'
+        }),
+        keyword: 'nwm'
+    });
 
     click_point_layer = new ol.layer.Vector({
       source: new ol.source.Vector(),
@@ -94,8 +104,10 @@ $(document).ready(function () {
     map.addLayer(basin_layer);
     map.addLayer(snap_point_layer);
 
-    var ylat = 40.1;
-    var xlon = -111.55;
+    // var ylat = 40.1;
+    // var xlon = -111.55;
+    var ylat = 18.9108;
+    var xlon = -71.2500;
     CenterMap(xlon,ylat);
     map.getView().setZoom(10);
 
@@ -116,7 +128,7 @@ function CenterMap(xlon,ylat){
     var dbPoint = {
         "type": "Point",
         "coordinates": [xlon, ylat]
-    }
+    };
     var coords = ol.proj.transform(dbPoint.coordinates, 'EPSG:4326','EPSG:3857');
     map.getView().setCenter(coords);
 }
@@ -170,6 +182,8 @@ function run_wd_service() {
             displayStatus.removeClass('calculating');
             displayStatus.addClass('success');
             displayStatus.html('<em>Success!</em>');
+
+            map.getView().fit(basin_layer.getSource().getExtent(), map.getSize())
 
 
         },

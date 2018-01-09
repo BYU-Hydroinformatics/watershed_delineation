@@ -5,13 +5,13 @@ import tempfile
 from tempfile import mkstemp
 
 # Apache should have ownership and full permission over this path
-DEM_FULL_PATH = "/home/sherry/utahfiles/utah3857.tif"
-DEM_NAME = 'utah3857' # DEM layer name, no extension (no .tif)
-DRAINAGE_FULL_PATH = "/home/sherry/utahfiles/utah3857_drain.tif"
-DRAINAGE_NAME = 'utah3857_drain'
-STREAMS_FULL_PATH = "/home/sherry/utahfiles/streams_1k_rast.tif"
-STREAMS_NAME = 'streams_1k_rast'
-GISBASE = "/usr/lib/grass72" # full path to GRASS installation
+DEM_FULL_PATH = "/home/sherry/DR/dr3857.tif"
+DEM_NAME = 'dr3857' # DEM layer name, no extension (no .tif)
+DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
+DRAINAGE_NAME = 'dr3857_drain'
+STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
+STREAMS_NAME = 'dr3857_streams10k'
+GISBASE = "/usr/lib/grass75" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')
 OUTPUT_DATA_PATH = os.path.join(tempfile.gettempdir(), 'grassdata', "output_data")
@@ -128,7 +128,7 @@ def WD(jobid, xlon, ylat, prj):
         if not os.path.exists(drainage_mapset_path):
             # Define region
             stats = gscript.parse_command('g.region', raster=dem, flags='p')
-            stats = gscript.read_command('r.watershed', elevation=dem, threshold='10000', drainage=drainage,
+            stats = gscript.read_command('r.watershed', elevation=dem, threshold='50000', drainage=drainage,
                                          flags='s', overwrite=True)
 
         # change outlet coordinates to a shape file

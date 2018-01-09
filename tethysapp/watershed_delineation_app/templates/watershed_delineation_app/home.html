@@ -2,11 +2,10 @@
 {% load tethys_gizmos %}
 {% load staticfiles %}
 
-
 {% block styles %}
 {{ block.super }}
 <!--<link href="{% static 'watershed_delineation_app/css/main.css' %}" rel="stylesheet"/>-->
-<link rel="stylesheet" href="{% static 'watershed_delineation_app/vendor/openlayers/v3.5.0-dist/ol.css' %}" type="text/css" />
+<link rel="stylesheet" href="{% static 'watershed_delineation_app/vendor/openlayer/v4.6.4-dist/ol.css' %}" type="text/css"/>
 <style>
     .ol-mouse-position {
       top: 10px;
@@ -63,7 +62,7 @@
 
 {% block scripts %}
     {{ block.super }}
-    <script src="{% static 'watershed_delineation_app/vendor/openlayers/v3.5.0-dist/ol.js' %}"></script>
+    <script src="{% static 'watershed_delineation_app/vendor/openlayer/v4.6.4-dist/ol.js' %}" type="text/javascript"></script>
     <script src="{% static 'watershed_delineation_app/js/home.js' %}" type="text/javascript"></script>
 
 {% endblock %}
