@@ -32,7 +32,7 @@ def WD(jobid, xlon, ylat, prj):
     gisdb = GISDB
     if not os.path.exists(gisdb):
         os.mkdir(gisdb)
-    location = "location_{0}".format(dem)
+    location = "location_wd_{0}".format(dem)
     mapset = "PERMANENT"
     msg = ""
 

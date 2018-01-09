@@ -159,6 +159,12 @@ function geojson2feature(myGeoJSON) {
 
 function run_wd_service() {
 
+     if (click_point_layer.getSource().getFeatures().length == 0 ) {
+        displayStatus.addClass('error');
+        displayStatus.html('<em>Error. Please select an outlet point on the map. </em>');
+        return
+     };
+
     basin_layer.getSource().clear();
     snap_point_layer.getSource().clear();
 

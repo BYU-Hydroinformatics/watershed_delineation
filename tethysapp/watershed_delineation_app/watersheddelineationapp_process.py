@@ -10,7 +10,7 @@ class watersheddelineationprocess(Process):
                   LiteralInput('outlet_y', 'Outlet Latitude', data_type='float')]
         outputs = [ComplexOutput('watershed', 'Delineated Watershed', supported_formats=[Format('application/gml+xml')]),
                    ComplexOutput('snappoint', 'Snapped outlet point', supported_formats=[Format('application/gml+xml')]),
-                   LiteralOutput('mytime', 'my time', data_type='float')]
+                   LiteralOutput('message', 'Processing message', data_type='string')]
 
         super(watersheddelineationprocess, self).__init__(
             self._handler,
@@ -44,6 +44,7 @@ class watersheddelineationprocess(Process):
 
         basin_GEOJSON = WD_dict["basin_GEOJSON"]
         outlet_snapped_GEOJSON = WD_dict["outlet_snapped_geojson"]
+        msg = WD_dict["msg"]
 
         print basin_GEOJSON
 
@@ -51,7 +52,7 @@ class watersheddelineationprocess(Process):
         response.outputs['watershed'].file = basin_GEOJSON
         response.outputs['snappoint'].output_format = FORMATS.GML
         response.outputs['snappoint'].file = outlet_snapped_GEOJSON
-        response.outputs['mytime'].data = "234"
+        response.outputs['message'].data = msg
 
         print response.outputs['watershed'].file
 
