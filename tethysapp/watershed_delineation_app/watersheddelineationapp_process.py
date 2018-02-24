@@ -8,8 +8,8 @@ class watersheddelineationprocess(Process):
         # init process
         inputs = [LiteralInput('outlet_x', 'Outlet Longitude', data_type='float'),
                   LiteralInput('outlet_y', 'Outlet Latitude', data_type='float')]
-        outputs = [ComplexOutput('watershed', 'Delineated Watershed', supported_formats=[Format('application/gml+xml')]),
-                   ComplexOutput('snappoint', 'Snapped outlet point', supported_formats=[Format('application/gml+xml')]),
+        outputs = [ComplexOutput('watershed', 'Delineated Watershed', supported_formats=[Format('text/xml')]),
+                   ComplexOutput('snappoint', 'Snapped outlet point', supported_formats=[Format('text/xml')]),
                    LiteralOutput('message', 'Processing message', data_type='string')]
 
         super(watersheddelineationprocess, self).__init__(
@@ -17,7 +17,7 @@ class watersheddelineationprocess(Process):
             identifier='watersheddelineationprocess', # must be same, as filename
             version='1.0',
             title="Watershed delineation process",
-            abstract='This process provides watershed delineation function using GRASS within DR country area',
+            abstract='This process snap a given point to nearest stream and perform watershed delineation function using GRASS within DR country area',
             profile='',
             inputs=inputs,
             outputs=outputs,

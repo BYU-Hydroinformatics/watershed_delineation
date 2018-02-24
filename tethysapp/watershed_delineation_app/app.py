@@ -8,7 +8,7 @@ class WatershedDelineationApp(TethysAppBase):
 
     name = 'Watershed Delineation App'
     index = 'watershed_delineation_app:home'
-    icon = 'watershed_delineation_app/images/icon.gif'
+    icon = 'watershed_delineation_app/images/watershedicon.png'
     package = 'watershed_delineation_app'
     root_url = 'watershed-delineation-app'
     color = '#27ae60'

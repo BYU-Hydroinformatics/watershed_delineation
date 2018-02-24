@@ -107,9 +107,9 @@ $(document).ready(function () {
     // var ylat = 40.1;
     // var xlon = -111.55;
     var ylat = 18.9108;
-    var xlon = -71.2500;
+    var xlon = -70.7500;
     CenterMap(xlon,ylat);
-    map.getView().setZoom(10);
+    map.getView().setZoom(8);
 
     map.on('click', function(evt) {
         var coordinate = evt.coordinate;
