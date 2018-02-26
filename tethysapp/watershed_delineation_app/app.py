@@ -6,16 +6,16 @@ class WatershedDelineationApp(TethysAppBase):
     Tethys app class for Watershed Delineation App.
     """
 
-    name = 'Watershed Delineation App'
+    name = 'Watershed Delineation for Dominican Republic'
     index = 'watershed_delineation_app:home'
     icon = 'watershed_delineation_app/images/watershedicon.png'
     package = 'watershed_delineation_app'
     root_url = 'watershed-delineation-app'
     color = '#27ae60'
-    description = 'Place a brief description of your app here.'
+    description = 'This app allows you to perform watershed delineation in Dominican Republic Country.'
     tags = ''
     enable_feedback = False
-    feedback_emails = []
+    feedback_emails = ['xhqiao89@gmail.com']
 
     def url_maps(self):
         """

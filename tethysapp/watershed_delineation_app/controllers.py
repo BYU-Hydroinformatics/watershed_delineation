@@ -16,7 +16,7 @@ def home(request):
     """
     btnDelin = Button(display_text="Delinate Watershed",
                           name="btnDelin",
-                          attributes="onclick=run_wd_service()",
+                          attributes="onclick=run_wd_calc()",
                           submit=False)
 
     context = {

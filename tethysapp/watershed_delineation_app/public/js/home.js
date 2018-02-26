@@ -3,7 +3,7 @@
  */
 var map, click_point_layer, river_layer, basin_layer, snap_point_layer,dem_layer;
 var outlet_x, outlet_y;
-
+var is_running = false;
 var displayStatus = $('#display-status');
 
 
@@ -87,12 +87,12 @@ $(document).ready(function () {
     }),
     style: new ol.style.Style({
         stroke: new ol.style.Stroke({
-        color: 'blue',
+        color: '#0F08A6',
         lineDash: [4],
         width: 3
         }),
         fill: new ol.style.Fill({
-        color: 'rgba(0, 0, 255, 0.1)'
+        color: 'rgba(0, 0, 255, 0.3)'
         })
     })
     });
@@ -104,8 +104,6 @@ $(document).ready(function () {
     map.addLayer(basin_layer);
     map.addLayer(snap_point_layer);
 
-    // var ylat = 40.1;
-    // var xlon = -111.55;
     var ylat = 18.9108;
     var xlon = -70.7500;
     CenterMap(xlon,ylat);
@@ -117,8 +115,8 @@ $(document).ready(function () {
 
         outlet_x = coordinate[0];
         outlet_y = coordinate[1];
-        // map.getView().setCenter(evt.coordinate);
-        // map.getView().setZoom(14);
+        map.getView().setCenter(evt.coordinate);
+        map.getView().setZoom(12);
 
     })
 
@@ -136,6 +134,10 @@ function CenterMap(xlon,ylat){
 function addClickPoint(coordinates){
     // Check if the feature exists. If not then create it.
     // If it does exist, then just change its geometry to the new coords.
+    if (is_running == true){
+        return;
+    }
+
     var geometry = new ol.geom.Point(coordinates);
     if (click_point_layer.getSource().getFeatures().length==0){
         var feature = new ol.Feature({
@@ -157,9 +159,13 @@ function geojson2feature(myGeoJSON) {
 
 }
 
-function run_wd_service() {
+function run_wd_calc() {
 
-     if (click_point_layer.getSource().getFeatures().length == 0 ) {
+    if (is_running == true){
+        return;
+    }
+
+    if (click_point_layer.getSource().getFeatures().length == 0 ) {
         displayStatus.addClass('error');
         displayStatus.html('<em>Error. Please select an outlet point on the map. </em>');
         return
@@ -167,10 +173,10 @@ function run_wd_service() {
 
     basin_layer.getSource().clear();
     snap_point_layer.getSource().clear();
-
     displayStatus.removeClass('error');
-    displayStatus.addClass('calculating');
-    displayStatus.html('<em>Calculating...</em>');
+    waiting_output();
+
+    is_running = true;
 
     $.ajax({
         type: 'GET',
@@ -185,20 +191,29 @@ function run_wd_service() {
 
             basin_layer.getSource().addFeatures(geojson2feature(data.basin_data));
             snap_point_layer.getSource().addFeatures(geojson2feature(data.outlet_snapped_data));
-            displayStatus.removeClass('calculating');
             displayStatus.addClass('success');
             displayStatus.html('<em>Success!</em>');
 
-            map.getView().fit(basin_layer.getSource().getExtent(), map.getSize())
+            map.getView().fit(basin_layer.getSource().getExtent(), map.getSize());
+            is_running = false;
+            $('#btnDelin').prop('disabled', false);
 
 
         },
         error: function (jqXHR, textStatus, errorThrown) {
             alert("Error");
-            displayStatus.removeClass('calculating');
             displayStatus.addClass('error');
             displayStatus.html('<em>' + errorThrown + '</em>');
+            is_running = false;
+            $('#btnDelin').prop('disabled', false);
         }
     });
 
+}
+
+
+function waiting_output() {
+    var wait_text = "<strong>Watershed delineation processing...</strong><br>" +
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/watershed_delineation_app/images/earth_globe.gif'>";
+    document.getElementById('display-status').innerHTML = wait_text;
 }

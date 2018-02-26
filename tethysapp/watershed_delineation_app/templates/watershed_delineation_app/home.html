@@ -21,7 +21,10 @@
 {% endblock %}
 
 {% block app_navigation_items %}
-  <h5>Please click on the map to select an outlet, then click "Delineate Watershed" button to run.</h5>
+<br>
+<p><b>Welcome to Watershed Delineation for Dominican Republic App!</b></p>
+<br>
+  <p>Please click on the map to select an outlet, then click "Delineate Watershed" button to run.</p>
 
   {% gizmo button btnDelin %}
 
@@ -29,7 +32,6 @@
 {% endblock %}
 
 {% block app_content %}
-  <h2>Welcome to Watershed Delineation App!</h2>
   <div id="map"></div>
 {% endblock %}
 
@@ -41,12 +43,13 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h5 class="modal-title" id="help-modal-label">Example Modal</h5>
+          <h5 class="modal-title" id="help-modal-label">Welcome to Watershed Delineation for DR App!</h5>
         </div>
         <div class="modal-body">
-          <p>You can add custom buttons to the app header using the <code>header_buttons</code> block. Use anchor/link tags for the button and wrap it in a div with the class <code>header-button</code>. For buttons with the gliphyicons, add the <code>glyphicon-button</code> class as well.</p>
-          <p>Ever have trouble using a modal in a Tethys app? Use the <code>after_app_content</code> block for modal content to allow them to function properly. See: <a href="https://getbootstrap.com/javascript/#modals">Bootstrap Modals</a></p>
-          <p>Add tooltips to any element by adding the <code>data-toggle</code>, <code>data-placement</code>, and <code>title</code> attributes to the button. See: <a href="https://getbootstrap.com/javascript/#tooltips">Bootstrap Tooltips</a></p>
+          <p>This app allows you to perform watershed delineation in Dominican Republic Country.</p>
+          <p>You can zoom in/out of the map to find an outlet, then click on the map to draw a point.
+          Then you can click "Delineate Watershed" button. The app will snap the outlet to the nearest stream, and delineate watershed. Resulted watershed and snapped point will show on the map.</p>
+          <p>Please make sure to select an outlet within the Dominican Republic Country.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

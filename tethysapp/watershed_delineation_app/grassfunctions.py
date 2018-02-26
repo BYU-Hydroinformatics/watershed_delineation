@@ -11,11 +11,11 @@ DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
 DRAINAGE_NAME = 'dr3857_drain'
 STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
 STREAMS_NAME = 'dr3857_streams10k'
-GISBASE = "/usr/lib/grass74" # full path to GRASS installation
+GISBASE = "/usr/lib/grass75" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')
 OUTPUT_DATA_PATH = os.path.join(tempfile.gettempdir(), 'grassdata', "output_data")
-
+os.environ["HOME"] = "/tmp"
 
 def WD(jobid, xlon, ylat, prj):
 
