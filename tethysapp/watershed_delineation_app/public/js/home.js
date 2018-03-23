@@ -115,8 +115,11 @@ $(document).ready(function () {
 
         outlet_x = coordinate[0];
         outlet_y = coordinate[1];
-        map.getView().setCenter(evt.coordinate);
-        map.getView().setZoom(12);
+        //this point may result in multi polygon returned
+        // outlet_x = -7875977.5;
+        // outlet_y = 2192322;
+        // map.getView().setCenter(evt.coordinate);
+        // map.getView().setZoom(12);
 
     })
 

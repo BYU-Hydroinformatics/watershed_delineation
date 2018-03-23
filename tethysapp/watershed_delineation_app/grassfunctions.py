@@ -176,16 +176,23 @@ def WD(jobid, xlon, ylat, prj):
         basin_all_0_vect = "{0}_all_0_vect".format(basin)
         stats = gscript.parse_command('r.to.vect', input=basin_all_0, output=basin_all_0_vect, type="area",
                                       overwrite=True)
-        # only keep biggest lake area, or remove small area
-        # v.clean input=basin_1vec@test1 output=clean_basin_1 tool=rmarea threshold=10000
-        basin_all_0_clean = "{0}_all_0_clean".format(basin)
-        stats = gscript.parse_command('v.clean', input=basin_all_0_vect, output=basin_all_0_clean, tool='rmarea', threshold = '50000',
-                                      overwrite=True)
+        # # only keep biggest lake area, or remove small area
+        # # v.clean input=basin_1vec@test1 output=clean_basin_1 tool=rmarea threshold=10000
+        # basin_all_0_clean = "{0}_all_0_clean".format(basin)
+        # stats = gscript.parse_command('v.clean', input=basin_all_0_vect, output=basin_all_0_clean, tool='rmarea', threshold = '50000',
+        #                               overwrite=True)
+
+        stats = gscript.parse_command('v.db.addcolumn', map=basin_all_0_vect, columns="area_polygon DOUBLE PRECISION")
+        stats = gscript.parse_command('v.to.db', map=basin_all_0_vect, option="area", columns="area_polygon")
+        stats = gscript.read_command('db.select', sql="SELECT cat FROM {0} where area_polygon = (SELECT MAX(area_polygon) from {1})".format(basin_all_0_vect,basin_all_0_vect))
+        cat_max = int(stats.split("\n")[1])
+        basin_all_0_max = "{0}_all_0_max".format(basin)
+        stats = gscript.parse_command('v.extract', cats="{0}".format(str(cat_max)), input=basin_all_0_vect, output=basin_all_0_max,overwrite=True)
 
         # output watershed to GeoJSON
         geojson_f_name = "{0}.GEOJSON".format(basin)
         basin_GEOJSON = os.path.join(output_data_path, geojson_f_name)
-        stats = gscript.parse_command('v.out.ogr', input=basin_all_0_clean, output=basin_GEOJSON, \
+        stats = gscript.parse_command('v.out.ogr', input=basin_all_0_max, output=basin_GEOJSON, \
                                       format="GeoJSON", type="area", overwrite=True, flags="c")
 
         return {"outlet_snapped_geojson":outlet_snapped_GEOJSON,
