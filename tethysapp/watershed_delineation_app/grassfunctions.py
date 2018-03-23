@@ -11,7 +11,7 @@ DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
 DRAINAGE_NAME = 'dr3857_drain'
 STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
 STREAMS_NAME = 'dr3857_streams10k'
-GISBASE = "/usr/lib/grass74" # full path to GRASS installation
+GISBASE = "/usr/lib/grass75" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')
 OUTPUT_DATA_PATH = os.path.join(tempfile.gettempdir(), 'grassdata', "output_data")
@@ -176,11 +176,16 @@ def WD(jobid, xlon, ylat, prj):
         basin_all_0_vect = "{0}_all_0_vect".format(basin)
         stats = gscript.parse_command('r.to.vect', input=basin_all_0, output=basin_all_0_vect, type="area",
                                       overwrite=True)
+        # only keep biggest lake area, or remove small area
+        # v.clean input=basin_1vec@test1 output=clean_basin_1 tool=rmarea threshold=10000
+        basin_all_0_clean = "{0}_all_0_clean".format(basin)
+        stats = gscript.parse_command('v.clean', input=basin_all_0_vect, output=basin_all_0_clean, tool='rmarea', threshold = '50000',
+                                      overwrite=True)
 
         # output watershed to GeoJSON
         geojson_f_name = "{0}.GEOJSON".format(basin)
         basin_GEOJSON = os.path.join(output_data_path, geojson_f_name)
-        stats = gscript.parse_command('v.out.ogr', input=basin_all_0_vect, output=basin_GEOJSON, \
+        stats = gscript.parse_command('v.out.ogr', input=basin_all_0_clean, output=basin_GEOJSON, \
                                       format="GeoJSON", type="area", overwrite=True, flags="c")
 
         return {"outlet_snapped_geojson":outlet_snapped_GEOJSON,
