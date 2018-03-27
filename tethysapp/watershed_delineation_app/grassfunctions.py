@@ -176,23 +176,43 @@ def WD(jobid, xlon, ylat, prj):
         basin_all_0_vect = "{0}_all_0_vect".format(basin)
         stats = gscript.parse_command('r.to.vect', input=basin_all_0, output=basin_all_0_vect, type="area",
                                       overwrite=True)
-        # # only keep biggest lake area, or remove small area
+        # # method 1: remove small areas (hard to define thredhold)
         # # v.clean input=basin_1vec@test1 output=clean_basin_1 tool=rmarea threshold=10000
         # basin_all_0_clean = "{0}_all_0_clean".format(basin)
         # stats = gscript.parse_command('v.clean', input=basin_all_0_vect, output=basin_all_0_clean, tool='rmarea', threshold = '50000',
         #                               overwrite=True)
 
-        stats = gscript.parse_command('v.db.addcolumn', map=basin_all_0_vect, columns="area_polygon DOUBLE PRECISION")
-        stats = gscript.parse_command('v.to.db', map=basin_all_0_vect, option="area", columns="area_polygon")
-        stats = gscript.read_command('db.select', sql="SELECT cat FROM {0} where area_polygon = (SELECT MAX(area_polygon) from {1})".format(basin_all_0_vect,basin_all_0_vect))
-        cat_max = int(stats.split("\n")[1])
-        basin_all_0_max = "{0}_all_0_max".format(basin)
-        stats = gscript.parse_command('v.extract', cats="{0}".format(str(cat_max)), input=basin_all_0_vect, output=basin_all_0_max,overwrite=True)
+        # method 2: list area of each area, extract biggest one (may remove snap point)
+        # stats = gscript.parse_command('v.db.addcolumn', map=basin_all_0_vect, columns="area_polygon DOUBLE PRECISION")
+        # stats = gscript.parse_command('v.to.db', map=basin_all_0_vect, option="area", columns="area_polygon")
+        # stats = gscript.read_command('db.select', sql="SELECT cat FROM {0} where area_polygon = (SELECT MAX(area_polygon) from {1})".format(basin_all_0_vect,basin_all_0_vect))
+        # cat_max = int(stats.split("\n")[1])
+        # basin_all_0_max = "{0}_all_0_max".format(basin)
+        # stats = gscript.parse_command('v.extract', cats="{0}".format(str(cat_max)), input=basin_all_0_vect, output=basin_all_0_max,overwrite=True)
+
+        # method 3: buffer
+        # v.buffer input = drain_A1vect output = drain_A1buf01 distance = 0.1 --overwrite
+
+        final_polygon_vect_name = basin_all_0_vect
+
+        stats = gscript.read_command('db.select', sql="SELECT COUNT(*) FROM {0}".format(basin_all_0_vect))
+        count_num =int(stats.split("\n")[1])
+        if count_num > 1:
+            print("***************run buffer*********")
+            basin_all_0_buf = "{0}_all_0_buf".format(basin)
+            stats = gscript.parse_command('v.buffer', input=basin_all_0_vect, output=basin_all_0_buf, distance="0.1", overwrite=True)
+            stats = gscript.parse_command('v.db.addtable', map=basin_all_0_buf, columns="area_polygon DOUBLE PRECISION")
+
+            stats = gscript.read_command('db.select', sql="SELECT COUNT(*) FROM {0}".format(basin_all_0_buf))
+            count_num_bufferred = int(stats.split("\n")[1])
+            print("After buffer count: {0}".format(str(count_num_bufferred)))
+
+            final_polygon_vect_name = basin_all_0_buf
 
         # output watershed to GeoJSON
         geojson_f_name = "{0}.GEOJSON".format(basin)
         basin_GEOJSON = os.path.join(output_data_path, geojson_f_name)
-        stats = gscript.parse_command('v.out.ogr', input=basin_all_0_max, output=basin_GEOJSON, \
+        stats = gscript.parse_command('v.out.ogr', input=final_polygon_vect_name, output=basin_GEOJSON, \
                                       format="GeoJSON", type="area", overwrite=True, flags="c")
 
         return {"outlet_snapped_geojson":outlet_snapped_GEOJSON,
