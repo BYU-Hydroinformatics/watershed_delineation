@@ -57,6 +57,8 @@ def run_wd(request):
 
     except Exception as ex:
         message = ex.message
+        print ex
+        print ex.message
 
     # Return inputs and results
     finally:
