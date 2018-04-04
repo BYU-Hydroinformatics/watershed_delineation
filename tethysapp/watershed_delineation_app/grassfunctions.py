@@ -3,6 +3,7 @@ import sys
 import subprocess
 import tempfile
 from tempfile import mkstemp
+import geojson
 
 # Apache should have ownership and full permission over this path
 DEM_FULL_PATH = "/home/sherry/DR/dr3857.tif"
@@ -192,7 +193,6 @@ def WD(jobid, xlon, ylat, prj):
 
         # method 3: buffer
         # v.buffer input = drain_A1vect output = drain_A1buf01 distance = 0.1 --overwrite
-
         final_polygon_vect_name = basin_all_0_vect
 
         stats = gscript.read_command('db.select', sql="SELECT COUNT(*) FROM {0}".format(basin_all_0_vect))
@@ -206,6 +206,10 @@ def WD(jobid, xlon, ylat, prj):
             stats = gscript.read_command('db.select', sql="SELECT COUNT(*) FROM {0}".format(basin_all_0_buf))
             count_num_bufferred = int(stats.split("\n")[1])
             print("After buffer count: {0}".format(str(count_num_bufferred)))
+            if count_num_bufferred == 0:
+                raise Exception("Buffered polygon count = 0")
+            if count_num_bufferred > 1:
+                raise Exception("Buffered polygon count > 1")
 
             final_polygon_vect_name = basin_all_0_buf
 
@@ -214,6 +218,23 @@ def WD(jobid, xlon, ylat, prj):
         basin_GEOJSON = os.path.join(output_data_path, geojson_f_name)
         stats = gscript.parse_command('v.out.ogr', input=final_polygon_vect_name, output=basin_GEOJSON, \
                                       format="GeoJSON", type="area", overwrite=True, flags="c")
+
+        # check and make sure the geojson file only contain one feature.
+        # If the watershed have holes, the holes will be written as standalone features in the geojson file and cause error in reservoir calculation app
+        f_geojson = open(basin_GEOJSON)
+        geojson_obj = geojson.load(f_geojson)
+        print("*****************searching hole*********************")
+        if len(geojson_obj.features) > 1:
+            print("*****************found hole*********************")
+            for fea in geojson_obj.features:
+                if len(fea.properties.keys()) > 0:
+                    geojson_f_name_new = "{0}_new.GEOJSON".format(basin)
+                    basin_GEOJSON_new = os.path.join(output_data_path, geojson_f_name_new)
+                    f_out = open(basin_GEOJSON_new, "w")
+                    geojson.dump(fea, f_out)
+                    f_out.flush()
+                    basin_GEOJSON = basin_GEOJSON_new
+                    break
 
         return {"outlet_snapped_geojson":outlet_snapped_GEOJSON,
                 "basin_GEOJSON":basin_GEOJSON,
