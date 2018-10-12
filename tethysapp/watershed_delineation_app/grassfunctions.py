@@ -12,7 +12,7 @@ DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
 DRAINAGE_NAME = 'dr3857_drain'
 STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
 STREAMS_NAME = 'dr3857_streams10k'
-GISBASE = "/usr/lib/grass75" # full path to GRASS installation
+GISBASE = "/usr/lib/grass74" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')
 OUTPUT_DATA_PATH = os.path.join(tempfile.gettempdir(), 'grassdata', "output_data")
@@ -131,8 +131,6 @@ def WD(jobid, xlon, ylat, prj):
             stats = gscript.parse_command('g.region', raster=dem, flags='p')
             stats = gscript.read_command('r.watershed', elevation=dem, threshold='50000', drainage=drainage,
                                          flags='s', overwrite=True)
-
-        print("55555555555555555555555555555555555555")
 
         # change outlet coordinates to a shape file
         fd, outlet_txt_path = mkstemp()
