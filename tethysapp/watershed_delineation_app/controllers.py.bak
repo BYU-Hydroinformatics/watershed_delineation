@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from tethys_sdk.gizmos import Button, TextInput, SelectInput
 from django.shortcuts import render
-from .grassfunctions import WD
+from tethys_apps.tethysapp.watershed_delineation_app.grassfunctions import WD
 
 
 @login_required()
@@ -57,8 +57,8 @@ def run_wd(request):
 
     except Exception as ex:
         message = ex.message
-        print(ex)
-        print(ex.message)
+        print ex
+        print ex.message
 
     # Return inputs and results
     finally:

@@ -6,19 +6,13 @@ from tempfile import mkstemp
 import geojson
 
 # Apache should have ownership and full permission over this path
-# DEM_FULL_PATH = "/home/sherry/DR/dr3857.tif"
-DEM_FULL_PATH = "/home/elkin/tethysdev3/DataForAll/watershed_delineation_app/prtbckgnd.tif"
-# DEM_NAME = 'dr3857' # DEM layer name, no extension (no .tif)
-DEM_NAME = 'prtbckgnd' # DEM layer name, no extension (no .tif)
-# DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
-DRAINAGE_FULL_PATH = "/home/elkin/tethysdev3/DataForAll/watershed_delineation_app/DrainageDirections.tif"
-# DRAINAGE_NAME = 'dr3857_drain'
-DRAINAGE_NAME = 'DrainageDirections'
-# STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
-STREAMS_FULL_PATH = "/home/elkin/tethysdev3/DataForAll/watershed_delineation_app/streams_network.tif"
-# STREAMS_NAME = 'dr3857_streams10k'
-STREAMS_NAME = 'streams_network'
-GISBASE = "/usr/lib/grass74" # full path to GRASS installation
+DEM_FULL_PATH = "/home/sherry/DR/dr3857.tif"
+DEM_NAME = 'dr3857' # DEM layer name, no extension (no .tif)
+DRAINAGE_FULL_PATH = "/home/sherry/DR/dr3857_drain.tif"
+DRAINAGE_NAME = 'dr3857_drain'
+STREAMS_FULL_PATH = "/home/sherry/DR/dr3857_streams10k.tif"
+STREAMS_NAME = 'dr3857_streams10k'
+GISBASE = "/usr/lib/grass76" # full path to GRASS installation
 GRASS7BIN = "grass" # command to start GRASS from shell
 GISDB = os.path.join(tempfile.gettempdir(), 'grassdata')
 OUTPUT_DATA_PATH = os.path.join(tempfile.gettempdir(), 'grassdata', "output_data")
@@ -38,7 +32,6 @@ def WD(jobid, xlon, ylat, prj):
     # Define grass data folder, location, mapset
     gisdb = GISDB
     if not os.path.exists(gisdb):
-        print("creating gisdb directory..")
         os.mkdir(gisdb)
     location = "location_wd_{0}".format(dem)
     mapset = "PERMANENT"
@@ -46,13 +39,11 @@ def WD(jobid, xlon, ylat, prj):
 
     output_data_path = OUTPUT_DATA_PATH
     if not os.path.exists(output_data_path):
-        print("creating output data directory ..")
         os.mkdir(output_data_path)
 
     try:
         # Create location
         location_path = os.path.join(gisdb, location)
-        print("location_path",location_path)
         if not os.path.exists(location_path):
             startcmd = grass7bin + ' -c ' + dem_full_path + ' -e ' + location_path
 
@@ -60,8 +51,8 @@ def WD(jobid, xlon, ylat, prj):
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = p.communicate()
             if p.returncode != 0:
-                print('ERROR: %s' % err, file=sys.stderr)
-                print('ERROR: Cannot generate location (%s)' % startcmd, file=sys.stderr)
+                print >> sys.stderr, 'ERROR: %s' % err
+                print >> sys.stderr, 'ERROR: Cannot generate location (%s)' % startcmd
                 sys.exit(-1)
 
         xlon = float(xlon)
@@ -90,20 +81,16 @@ def WD(jobid, xlon, ylat, prj):
         dem_mapset_path = os.path.join(gisdb, location, mapset, "cell", dem)
 
         if not os.path.exists(dem_mapset_path):
-            print("here")
-            stats = gscript.read_command('r.in.gdal', flags='o', input= dem_full_path, output=dem)
+            stats = gscript.read_command('r.in.gdal', flags='o', input=dem_full_path, output=dem)
 
         # import drainage
         drainage_mapset_path = os.path.join(gisdb, location, mapset, "cell", drainage)
-        print(drainage_mapset_path)
         if not os.path.exists(drainage_mapset_path):
-            print("here drainage", drainage, drainage_full_path)
-            stats = gscript.read_command('r.in.gdal', flags='o', input = dem_full_path, output = drainage )
+            stats = gscript.read_command('r.in.gdal', flags='o', input=drainage_full_path, output=drainage)
 
         # import streams
         streams_mapset_path = os.path.join(gisdb, location, mapset, "cell", streams)
         if not os.path.exists(streams_mapset_path):
-            print("here streams")
             stats = gscript.read_command('r.in.gdal', flags='o', input=streams_full_path, output=streams)
 
         # Project xlon, ylat wgs84 into current
@@ -218,7 +205,7 @@ def WD(jobid, xlon, ylat, prj):
 
             stats = gscript.read_command('db.select', sql="SELECT COUNT(*) FROM {0}".format(basin_all_0_buf))
             count_num_bufferred = int(stats.split("\n")[1])
-            print(("After buffer count: {0}".format(str(count_num_bufferred))))
+            print("After buffer count: {0}".format(str(count_num_bufferred)))
             if count_num_bufferred == 0:
                 raise Exception("Buffered polygon count = 0")
             if count_num_bufferred > 1:
@@ -240,7 +227,7 @@ def WD(jobid, xlon, ylat, prj):
         if len(geojson_obj.features) > 1:
             print("*****************found hole*********************")
             for fea in geojson_obj.features:
-                if len(list(fea.properties.keys())) > 0:
+                if len(fea.properties.keys()) > 0:
                     geojson_f_name_new = "{0}_new.GEOJSON".format(basin)
                     basin_GEOJSON_new = os.path.join(output_data_path, geojson_f_name_new)
                     f_out = open(basin_GEOJSON_new, "w")

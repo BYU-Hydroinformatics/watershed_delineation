@@ -46,7 +46,7 @@ class watersheddelineationprocess(Process):
         outlet_snapped_GEOJSON = WD_dict["outlet_snapped_geojson"]
         msg = WD_dict["msg"]
 
-        print(basin_GEOJSON)
+        print basin_GEOJSON
 
         response.outputs['watershed'].output_format = FORMATS.GML
         response.outputs['watershed'].file = basin_GEOJSON
@@ -54,7 +54,7 @@ class watersheddelineationprocess(Process):
         response.outputs['snappoint'].file = outlet_snapped_GEOJSON
         response.outputs['message'].data = msg
 
-        print(response.outputs['watershed'].file)
+        print response.outputs['watershed'].file
 
         return response
 
